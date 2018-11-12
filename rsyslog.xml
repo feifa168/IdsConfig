@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<syslog>
+    <parse>
+        <item type="udp">
+            <regex><![CDATA[\s?(?<mark>\#+)?\s?(?<facility>\*|\w+)\.(?<level>\*|\w+)\s+((?<tcp>\@@)|(?<udp>\@))(?<ip>\d+\.\d+\.\d+\.\d+)\:(?<port>\d+)]]></regex>
+            <facility>*</facility>
+            <level>*</level>
+            <proto>@</proto>
+            <ip>127.0.0.1</ip>
+            <port>514</port>
+        </item>
+    </parse>
+</syslog>
