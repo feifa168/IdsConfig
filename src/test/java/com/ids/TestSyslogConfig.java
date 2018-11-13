@@ -1,13 +1,11 @@
 package com.ids;
 
-import org.junit.jupiter.api.Test;
+import com.ids.syslog.SyslogConfig;
+import org.junit.Test;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +31,7 @@ public class TestSyslogConfig {
 
                 // 检查是否已经存在该配置
                 int curpos = buf.position();
-                String pad = "                                                                            ";
+                String pad = "                                               ";
                 buf.put(pad.getBytes());
                 buf.flip();
                 String conf = new String(buf.array());
@@ -41,7 +39,7 @@ public class TestSyslogConfig {
 //    <parse>
 //        <item type="udp">
 //            <regex><![CDATA[\s*[^#](\*|\w+)\.(\*|\w+)\s+\@(?<ip>\d+\.\d+\.\d+\.\d+)\:(?<port>\d+)]]></regex>
-                Matcher m = Pattern.compile("\\s?(?<mark>\\#+)?\\s?(?<facility>\\*|\\w+)\\.(?<level>\\*|\\w+)\\s+((?<tcp>\\@@)|(?<udp>\\@))(?<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)\\:(?<port>\\d+)")
+                Matcher m = Pattern.compile("\\n\\s?(?<mark>\\#+)?\\s?(?<facility>\\*|\\w+)\\.(?<level>\\*|\\w+)\\s+((?<tcp>\\@@)|(?<udp>\\@))(?<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)\\:(?<port>\\d+)")
                         .matcher(conf);
                 boolean isfind = false;
                 // append your server
@@ -59,7 +57,7 @@ public class TestSyslogConfig {
                 String port = "";
                 while (m.find()) {
                     if (m.group("mark") != null) {
-                        break;
+                        continue;
                     }
                     facility = m.group("facility");
                     level   = m.group("level");
@@ -87,6 +85,12 @@ public class TestSyslogConfig {
                     long pos = fc.position();
                     buf.flip();
                     int iwrite = fc.write(ByteBuffer.wrap(udpconf.toString().getBytes()));//(buf, curpos);
+
+                    //buf.position((int)pos);
+                    //fc.write(buf) == fc.write(buf, fc.position());
+                    //fc.write(buf, 0) == fc.position(0); fc.write(buf);
+                    //buf.position() != fc.position(); buf和channel彼此独立，postion不相干
+
                     pos = fc.position();
                     int sf = 78;
                 }
@@ -109,6 +113,19 @@ public class TestSyslogConfig {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testModifySyslogConfig2() {
+        if (SyslogConfig.parse("rsyslog.xml")) {
+            if (SyslogConfig.modifySyslogConfigFile("rsyslog.conf")) {
+                System.out.println("ok");
+            } else {
+                System.out.println(SyslogConfig.errMsg);
+            }
+        } else {
+            System.out.println(SyslogConfig.errMsg);
         }
     }
 }

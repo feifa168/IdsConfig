@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<syslog>
+    <parse>
+        <item type="udp">
+            <regex><![CDATA[\n\s?(?<mark>\#+)?\s?(?<facility>\*|\w+)\.(?<level>\*|\w+)\s+((?<tcp>\@@)|(?<udp>\@))(?<ip>\d+\.\d+\.\d+\.\d+)\:(?<port>\d+)]]></regex>
+            <!-- * | auth | authpriv | daemon | user | local0 | local1 | local2 | local3 | local4 | local5 | local6 | local7 -->
+            <facility>*</facility>
+            <!-- * | emerg | alert | crit | err | warning | notice | info | debug -->
+            <level>*</level>
+            <proto>@</proto>
+            <ip>127.0.0.1</ip>
+            <port>514</port>
+        </item>
+    </parse>
+</syslog>
