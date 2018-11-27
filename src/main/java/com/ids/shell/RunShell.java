@@ -35,4 +35,30 @@ public class RunShell {
 
         return "";
     }
+
+    public static String run(String[] commands) {
+        try {
+            Process process = Runtime.getRuntime().exec(commands);
+
+            InputStream ins = process.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(ins, encode));
+            StringBuilder sb = new StringBuilder(128);
+            String line;
+            while((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+            ins.close();
+            try {
+                process.waitFor();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
 }

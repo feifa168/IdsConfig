@@ -11,6 +11,31 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TestParamConfig {
+    public String rTrim(String s) {
+        int offset = s.length();
+        while (offset > 0) {
+            char c = s.charAt(offset-1);
+            if ( c=='\n' || c=='\r' || c==' ' || c=='\t') {
+                offset--;
+            } else {
+                break;
+            }
+        }
+
+        if (offset == 0) {
+            return "";
+        }
+
+        return s.substring(0, offset);
+    }
+
+    @Test
+    public void testRTrim() {
+        String s1 = new String(" \nhello tom \t\n\t\r\n");
+        String s2 = rTrim(s1);
+        System.out.println(s2);
+    }
+
     @Test
     public void testMatchs() {
         Matcher m = Pattern.compile("(\\n)?(tom|tom2)(\\r\\n|\\n|$)").matcher("hello\r\ntom4\n");
@@ -59,7 +84,7 @@ public class TestParamConfig {
             // 执行shell命令
             for(ParamConfig.ShellCommand command : ParamConfig.commands) {
                 RunShell.setEncode(ParamConfig.encode);
-                System.out.println(RunShell.run(command.command));
+                System.out.println(RunShell.run(command.params));
             }
         } else {
             System.out.println(ParamConfig.errMsg);

@@ -51,12 +51,17 @@ public class SoPathConfig {
                     break;
                 }
 
-                String context = new String(buf.array());
-                for (String text : soLoadPaths) {
-                    Matcher m = Pattern.compile(text+"\\b").matcher(context);
-                    if (!m.find()) {
-                        isok = true;
+                byte[] bts = new byte[buf.limit()];
+                buf.get(bts);
+                String context = rTrim(new String(bts));
 
+                for (String text : soLoadPaths) {
+                    Matcher m = Pattern.compile(text+"(\\r\\n|\\n|\\s|$)").matcher(context);
+
+                    if (m.find()) {
+                        isok = true;
+                        break;
+                    } else {
                         String putStr = null;
                         if ((text.length() > 0) && (text.indexOf(text.length()-1) != '\n')) {
                             putStr = "\n"+text;
@@ -64,14 +69,17 @@ public class SoPathConfig {
                             putStr = text;
                         }
 
-                        int curPos = (int)buf.limit();
+                        int offset = context.length() - buf.limit();
+
+                        int curPos = (int)(buf.limit() + offset);
                         buf.position(curPos);
-                        buf.limit(buf.limit()+putStr.length());
+                        buf.limit(curPos+putStr.length());
                         buf.put(putStr.getBytes());
 
                         try {
+                            isok = true;
                             buf.position(curPos);
-                            fc.write(buf);
+                            fc.write(buf, curPos);
                         } catch (IOException e) {
                             //e.printStackTrace();
                             errMsg = e.getMessage();
@@ -95,6 +103,24 @@ public class SoPathConfig {
         }
 
         return isok;
+    }
+
+    private static String rTrim(String s) {
+        int offset = s.length();
+        while (offset > 0) {
+            char c = s.charAt(offset-1);
+            if ( c=='\n' || c=='\r' || c==' ' || c=='\t') {
+                offset--;
+            } else {
+                break;
+            }
+        }
+
+        if (offset == 0) {
+            return "";
+        }
+
+        return s.substring(0, offset);
     }
 
     private static boolean matchContext(String context, ParamConfig.SyslogServer server) {

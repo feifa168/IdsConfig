@@ -45,7 +45,7 @@ public class Main {
             // 执行shell命令
             for(ParamConfig.ShellCommand command : ParamConfig.commands) {
                 RunShell.setEncode(ParamConfig.encode);
-                System.out.println(RunShell.run(command.command));
+                System.out.println(RunShell.run(command.params));
             }
         } else {
             System.out.println(ParamConfig.errMsg);

@@ -52,7 +52,7 @@ public class ParamConfig {
         public SyslogServer() {}
     }
     public static class ShellCommand {
-        public String command = "";
+        public String[] params = null;
     }
 
     public static String errMsg     = null;
@@ -235,13 +235,21 @@ public class ParamConfig {
             }
 
             commands = new ShellCommand[items.size()];
-            int i=0;
-            for (Node item : items) {
+            for (int i=0; i< items.size(); i++) {
                 ShellCommand curShell = new ShellCommand();
-                commands[i++] = curShell;
+                commands[i] = curShell;
+
+                Node item = items.get(i);
                 if (item != null) {
-                    Node ndCommand  = item.selectSingleNode("command");
-                    curShell.command = parseField(ndCommand, "");
+                    List<Node> ndParams  = item.selectNodes("params/param");
+                    int sz = ndParams.size();
+                    if (sz > 0) {
+                        curShell.params = new String[sz];
+                        for (int j=0; j<sz; j++) {
+                            Node ndParam = ndParams.get(j);
+                            curShell.params[j] = parseField(ndParam, "");
+                        }
+                    }
                 }
             }
             return commands;

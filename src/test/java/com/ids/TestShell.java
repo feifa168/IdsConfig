@@ -6,6 +6,8 @@ import com.ids.shell.RunShell;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestShell {
     @Test
@@ -33,8 +35,63 @@ public class TestShell {
     @Test
     public void testRunShell123() {
         RunShell.setEncode("gb2312");
+        String[] cmds = new String[] {"cmd", "/c", "dir /?"};
+        System.out.println(RunShell.run(cmds));
+
+        System.out.println("=========================");
         System.out.println(RunShell.run("cmd /c dir"));
-        System.out.println(RunShell.run("cmd /c help"));
+    }
+
+    @Test
+    public void testCmds() {
+        String[] args;
+        args = new String[] {"gb2312", "cmd", "/c", "dir", "/?"};
+        //args = new String[] {"gb2312", "cmd", "/c", "help", "more"};
+
+        int len = args.length;
+
+        String encode = args[0];
+        RunShell.setEncode(encode);
+
+        List<String> lstCmds = new LinkedList<>();
+        boolean isCmd = false;
+        String cmd = "";
+        for (int i=1; i<len; i++) {
+            String curStr = args[i];
+            if (curStr.equals("-c") || curStr.equals("/c")) {
+                isCmd = true;
+                lstCmds.add(curStr);
+            } else {
+                if (!isCmd) {
+                    lstCmds.add(curStr);
+                } else {
+                    cmd += " " + curStr;
+                }
+            }
+        }
+        int i=0;
+        String[] cmds = null;
+        if (isCmd) {
+            cmds = new String[lstCmds.size()+1];
+        } else {
+            cmds = new String[lstCmds.size()];
+        }
+
+        for (i=0; i<lstCmds.size(); i++) {
+            cmds[i] = lstCmds.get(i);
+        }
+        if (isCmd) {
+            cmds[i] = cmd;
+        }
+//        String[] cmds = new String[3];
+//        cmds[0] = "sh";
+//        cmds[1] = "-c";
+//        cmds[2] = "systemctl status rsyslog";
+
+        for (i=0; i<cmds.length; i++) {
+            System.out.println(cmds[i]);
+        }
+        System.out.println(RunShell.run(cmds));
     }
 
     @Test
