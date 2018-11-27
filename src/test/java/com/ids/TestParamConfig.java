@@ -1,18 +1,32 @@
 package com.ids;
 
 import com.ids.config.SoPathConfig;
+import com.ids.config.SyslogConfig;
 import com.ids.copy.commonio.CopyFile;
 import com.ids.param.ParamConfig;
 import com.ids.shell.RunShell;
+import org.junit.Test;
 
-public class Main {
-    public static void main(String[] args) {
-        if (ParamConfig.parse("run.xml")) {
-            com.ids.config.SyslogConfig.setSyslogServers(ParamConfig.logServer);
-            if (com.ids.config.SyslogConfig.modifySyslogConfigFile(ParamConfig.syslogFile)) {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class TestParamConfig {
+    @Test
+    public void testMatchs() {
+        Matcher m = Pattern.compile("(\\n)?(tom|tom2)(\\r\\n|\\n|$)").matcher("hello\r\ntom4\n");
+        while (m.find()) {
+            System.out.println("un find");
+        }
+    }
+
+    @Test
+    public void test12334() {
+        if (ParamConfig.parse("runwindow.xml")) {
+            SyslogConfig.setSyslogServers(ParamConfig.logServer);
+            if (SyslogConfig.modifySyslogConfigFile(ParamConfig.syslogFile)) {
                 System.out.println("parse " + ParamConfig.syslogFile + " ok");
             } else {
-                System.out.println(com.ids.config.SyslogConfig.errMsg);
+                System.out.println(SyslogConfig.errMsg);
             }
 
             // copy file
@@ -28,7 +42,7 @@ public class Main {
             srcDir = ParamConfig.lib64SrcDir;
             destDir = ParamConfig.lib64DstDir;
             if(cf.copyDirectory(srcDir, destDir)) {
-                System.out.println("copydirectory from "+srcDir+" to "+destDir+" ok");
+             System.out.println("copydirectory from "+srcDir+" to "+destDir+" ok");
             } else {
                 System.out.println("copydirectory from "+srcDir+" to "+destDir+" fail, error is " + cf.getErrMsg());
             }

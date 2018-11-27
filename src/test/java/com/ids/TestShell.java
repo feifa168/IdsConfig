@@ -1,6 +1,8 @@
 package com.ids;
 
 
+import com.ids.param.ParamConfig;
+import com.ids.shell.RunShell;
 import org.junit.Test;
 
 import java.io.*;
@@ -26,6 +28,13 @@ public class TestShell {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testRunShell123() {
+        RunShell.setEncode("gb2312");
+        System.out.println(RunShell.run("cmd /c dir"));
+        System.out.println(RunShell.run("cmd /c help"));
     }
 
     @Test
