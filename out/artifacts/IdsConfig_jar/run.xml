@@ -51,6 +51,13 @@
                         <param>systemctl restart rsyslog</param>
                     </params>
                 </item>
+                <item>
+                    <params>
+                        <param>sh</param>
+                        <param>-c</param>
+                        <param>mkdir /var/log/snort</param>
+                    </params>
+                </item>
             </items>
         </param>
     </params>

@@ -1,18 +1,15 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="IdsConfig:jar">
+  <artifact name="IdsConfig:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/IdsConfig_jar</output-path>
-    <root id="archive" name="IdsConfig_jar.jar">
+    <root id="root">
       <element id="archive" name="IdsConfig.jar">
         <element id="module-output" name="IdsConfig" />
       </element>
-      <element id="library" level="project" name="Maven: jaxen:jaxen:1.1.6" />
-      <element id="library" level="project" name="Maven: junit:junit:4.12" />
-      <element id="library" level="project" name="Maven: commons-io:commons-io:2.6" />
-      <element id="library" level="project" name="Maven: org.dom4j:dom4j:2.1.1" />
       <element id="library" level="project" name="Maven: org.hamcrest:hamcrest-core:1.3" />
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
-      </element>
+      <element id="library" level="project" name="Maven: org.dom4j:dom4j:2.1.1" />
+      <element id="library" level="project" name="Maven: jaxen:jaxen:1.1.6" />
+      <element id="library" level="project" name="Maven: commons-io:commons-io:2.6" />
+      <element id="library" level="project" name="Maven: junit:junit:4.13-beta-1" />
       <element id="file-copy" path="$PROJECT_DIR$/run.xml" />
     </root>
   </artifact>
