@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<encrypt>
+    <src>idsConfig.jar</src>
+    <dst>idsConfigEnc.jar</dst>
+    <files>
+        <file type="package">com.ids</file>
+    </files>
+</encrypt>
