@@ -23,6 +23,81 @@
                 <item>/usr/lib64/123</item>
             </items>
         </param>
+        <param type="interface">
+            <items>
+                <item>
+                    <interface>${interface}</interface>
+                    <command>bin/snort -c etc/snort/snort.lua -i ${interface} -l /var/log/snort --plugin-path extra -k none</command>
+                    <dst>./</dst>
+                    <shells>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>md ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>chmod +x ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>chkconfig --add ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>chkconfig ${file} on</param>
+                            </params>
+                        </shell>
+                    </shells>
+                </item>
+
+                <item>
+                    <interface>eth2</interface>
+                    <command>bin/snort -c etc/snort/snort.lua -i ${interface} -l /var/log/snort --plugin-path extra -k none</command>
+                    <dst>./</dst>
+                    <shells>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>md ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>chmod +x ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>chkconfig --add ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>cmd</param>
+                                <param>/c</param>
+                                <param>chkconfig ${file} on</param>
+                            </params>
+                        </shell>
+                    </shells>
+                </item>
+            </items>
+        </param>
         <param type="ids">
             <items>
                 <item type="directory">

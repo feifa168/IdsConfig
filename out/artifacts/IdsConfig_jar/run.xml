@@ -4,7 +4,7 @@
     <params>
         <!--"/etc/rsyslog.conf /home/my/srdDir /home/my/destDir /home/my/srdDir2 /home/my/destDir2"-->
         <param type="syslog">
-            <file>rsyslog.conf</file>
+            <file>/etc/rsyslog.conf</file>
             <items>
                 <item>
                     <regex><![CDATA[\n\s?(?<mark>\#+)?\s?(?<facility>\*|\w+)\.(?<level>\*|\w+)\s+((?<tcp>\@@)|(?<udp>\@))(?<ip>\d+\.\d+\.\d+\.\d+)\:(?<port>\d+)]]></regex>
@@ -32,6 +32,45 @@
                 <item type="lib64">
                     <src>../lib64</src>
                     <dst>/usr/local/lib64</dst>
+                </item>
+            </items>
+        </param>
+        <param type="interface">
+            <items>
+                <item>
+                    <interface>${interface}</interface>
+                    <command>${idspath}/bin/snort -c ${idspath}/etc/snort/snort.lua -i ${interface} -l /var/log/snort --plugin-path ${idspath}/extra -k none</command>
+                    <dst>/etc/rc.d/init.d</dst>
+                    <shells>
+                        <shell>
+                            <params>
+                                <param>sh</param>
+                                <param>-c</param>
+                                <param>vi ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>sh</param>
+                                <param>-c</param>
+                                <param>chmod +x ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>sh</param>
+                                <param>-c</param>
+                                <param>chkconfig --add ${file}</param>
+                            </params>
+                        </shell>
+                        <shell>
+                            <params>
+                                <param>sh</param>
+                                <param>-c</param>
+                                <param>chkconfig ${file} on</param>
+                            </params>
+                        </shell>
+                    </shells>
                 </item>
             </items>
         </param>

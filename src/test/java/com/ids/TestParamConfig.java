@@ -53,6 +53,7 @@ public class TestParamConfig {
             } else {
                 System.out.println(SyslogConfig.errMsg);
             }
+            ParamConfig.netIfaces[0].iface = "iface1";
 
             // copy file
             CopyFile cf = new CopyFile();
@@ -85,6 +86,13 @@ public class TestParamConfig {
             for(ParamConfig.ShellCommand command : ParamConfig.commands) {
                 RunShell.setEncode(ParamConfig.encode);
                 System.out.println(RunShell.run(command.params));
+            }
+
+            // 创建执行脚本
+            if (ParamConfig.buildIdsRunShell()) {
+                for (ParamConfig.NetInterface iface : ParamConfig.netIfaces) {
+                    System.out.println("interface " + iface.iface + ", command " + iface.command);
+                }
             }
         } else {
             System.out.println(ParamConfig.errMsg);

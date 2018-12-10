@@ -1,44 +1,123 @@
 package com.ids.param;
 
+import com.ids.shell.RunShell;
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.InvalidParameterException;
 import java.util.List;
 
 public class ParamConfig {
-//<run>
-//    <params>
-//        <!--"/etc/rsyslog.conf /home/my/srdDir /home/my/destDir /home/my/srdDir2 /home/my/destDir2"-->
-//        <param type="syslog">/etc/rsyslog.conf>
-//            <items>
-//                <item>
-//                    <regex><![CDATA[\n\s?(?<mark>\#+)?\s?(?<facility>\*|\w+)\.(?<level>\*|\w+)\s+((?<tcp>\@@)|(?<udp>\@))(?<ip>\d+\.\d+\.\d+\.\d+)\:(?<port>\d+)]]></regex>
-//                    <!-- * | auth | authpriv | daemon | user | local0 | local1 | local2 | local3 | local4 | local5 | local6 | local7 -->
-//                    <facility>*</facility>
-//                    <!-- * | emerg | alert | crit | err | warning | notice | info | debug -->
-//                    <level>*</level>
-//                    <proto>@</proto>
-//                    <ip>127.0.0.1</ip>
-//                    <port>514</port>
-//                </item>
-//            </items>
-//        </param>
-//        <param type="so">/etc/ld.so.conf</param>
-//        <param type="ids">
-//            <item type="directory">
-//                <src>ids</src>
-//                <dst>/usr/local/ids</dst>
-//            </item>
-//            <item type="lib64">
-//                <src>lib64</src>
-//                <dst>/usr/local/lib64</dst>
-//            </item>
-//        </param>
-//    </params>
-//</run>
+    // <?xml version="1.0" encoding="UTF-8"?>
+//
+// <run>
+//     <params>
+//         <!--"/etc/rsyslog.conf /home/my/srdDir /home/my/destDir /home/my/srdDir2 /home/my/destDir2"-->
+//         <param type="syslog">
+//             <file>/etc/rsyslog.conf</file>
+//             <items>
+//                 <item>
+//                     <regex><![CDATA[\n\s?(?<mark>\#+)?\s?(?<facility>\*|\w+)\.(?<level>\*|\w+)\s+((?<tcp>\@@)|(?<udp>\@))(?<ip>\d+\.\d+\.\d+\.\d+)\:(?<port>\d+)]]></regex>
+//                     <!-- * | auth | authpriv | daemon | user | local0 | local1 | local2 | local3 | local4 | local5 | local6 | local7 -->
+//                     <facility>snort</facility>
+//                     <!-- * | emerg | alert | crit | err | warning | notice | info | debug -->
+//                     <level>alert</level>
+//                     <proto>udp</proto>
+//                     <ip>172.16.39.21</ip>
+//                     <port>514</port>
+//                 </item>
+//             </items>
+//         </param>
+//         <param type="so" file="/etc/ld.so.conf">
+//             <items>
+//                 <item>/usr/local/lib64</item>
+//             </items>
+//         </param>
+//         <param type="ids">
+//             <items>
+//                 <item type="directory">
+//                     <src>../ids</src>
+//                     <dst>/usr/local/ids</dst>
+//                 </item>
+//                 <item type="lib64">
+//                     <src>../lib64</src>
+//                     <dst>/usr/local/lib64</dst>
+//                 </item>
+//             </items>
+//         </param>
+//         <param type="interface">
+//             <items>
+//                 <item>
+//                     <interface>${interface}</interface>
+//                     <command>bin/snort -c etc/snort/snort.lua -i ${interface} -l /var/log/snort --plugin-path extra -k none</command>
+//                     <dst>/etc/rc.d/init.d</dst>
+//                     <shells>
+//                         <shell>
+//                             <params>
+//                                 <param>sh</param>
+//                                 <param>-c</param>
+//                                 <param>vi ${file}</param>
+//                             </params>
+//                         </shell>
+//                         <shell>
+//                             <params>
+//                                 <param>sh</param>
+//                                 <param>-c</param>
+//                                 <param>chmod +x ${file}</param>
+//                             </params>
+//                         </shell>
+//                         <shell>
+//                             <params>
+//                                 <param>sh</param>
+//                                 <param>-c</param>
+//                                 <param>chkconfig --add ${file}</param>
+//                             </params>
+//                         </shell>
+//                         <shell>
+//                             <params>
+//                                 <param>sh</param>
+//                                 <param>-c</param>
+//                                 <param>chkconfig ${file} on</param>
+//                             </params>
+//                         </shell>
+//                     </shells>
+//                 </item>
+//             </items>
+//         </param>
+//         <param type="shell">
+//             <items  encode="utf-8">
+//                 <item>
+//                     <params>
+//                         <param>sh</param>
+//                         <param>-c</param>
+//                         <param>ldconfig</param>
+//                     </params>
+//                 </item>
+//                 <item>
+//                     <params>
+//                         <param>sh</param>
+//                         <param>-c</param>
+//                         <param>systemctl restart rsyslog</param>
+//                     </params>
+//                 </item>
+//                 <item>
+//                     <params>
+//                         <param>sh</param>
+//                         <param>-c</param>
+//                         <param>mkdir /var/log/snort</param>
+//                     </params>
+//                 </item>
+//             </items>
+//         </param>
+//     </params>
+// </run>
     public static class SyslogServer {
         public String regex      = "\\n\\s?(?<mark>\\#+)?(?<facility>\\*|\\w+)\\.(?<level>\\*|\\w+)\\s+((?<tcp>\\@@)|(?<udp>\\@))(?<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)\\:(?<port>\\d+)";
         public String facility   = "*";
@@ -55,6 +134,13 @@ public class ParamConfig {
         public String[] params = null;
     }
 
+    public static class NetInterface {
+        public String iface;
+        public String command;
+        public String dst;
+        ShellCommand[] shellCommands;
+    }
+
     public static String errMsg     = null;
 
     public static SyslogServer[] logServer;
@@ -65,6 +151,7 @@ public class ParamConfig {
     public static String dstDir        = "/usr/local/ids";
     public static String lib64SrcDir   = "lib64";
     public static String lib64DstDir   = "/usr/local/lib64";
+    public static NetInterface[] netIfaces;
     public static String encode        = "utf-8";
     public static ShellCommand[] commands;
 
@@ -78,12 +165,13 @@ public class ParamConfig {
             List<Node> ndSoLoadPaths = doc.selectNodes("/run/params/param[@type=\"so\"]/items/item");
             Node ndDirectory    = doc.selectSingleNode("/run/params/param[@type=\"ids\"]/items/item[@type=\"directory\"]");
             Node ndLib64        = doc.selectSingleNode("/run/params/param[@type=\"ids\"]/items/item[@type=\"lib64\"]");
+            List<Node> ndInterfaces   = doc.selectNodes("/run/params/param[@type=\"interface\"]/items/item");
             Node ndEncode       = doc.selectSingleNode("/run/params/param[@type=\"shell\"]/items");
             List<Node> ndCommands   = doc.selectNodes("/run/params/param[@type=\"shell\"]/items/item");
 
             syslogFile  = parseField(ndSyslog, syslogFile);
             ldSoFile    = parseNodeAttribute(ndSo, "file", ldSoFile);
-            soLoadPaths = parseSoPaths(ndSoLoadPaths);
+            soLoadPaths = parseFields(ndSoLoadPaths);
             logServer   = parseLogServer(ndServer);
 
             if (ndDirectory != null) {
@@ -99,6 +187,7 @@ public class ParamConfig {
                 lib64DstDir     = parseField(ndLib64DstDir, lib64DstDir);
             }
 
+            netIfaces = parseNetInterface(ndInterfaces);
             encode = parseNodeAttribute(ndEncode, "encode", encode);
 
             commands = parseShellCommand(ndCommands);
@@ -121,6 +210,27 @@ public class ParamConfig {
             }
         }
         return defaultValue;
+    }
+
+    private static String[] parseFields(List<Node> items) {
+        if (items != null) {
+            if (items.size() == 0) {
+                errMsg = "three is no config";
+                return null;
+            }
+
+            String[] fields = new String[items.size()];
+            int i=0;
+            for (Node item : items) {
+                if (item != null) {
+                    fields[i++] = item.getText();
+                }
+            }
+            return fields;
+        }
+
+        errMsg = "three is no valid config";
+        return null;
     }
 
     private static SyslogServer[] parseLogServer(List<Node> items) {
@@ -206,24 +316,30 @@ public class ParamConfig {
         return defaultValue;
     }
 
-    private static String[] parseSoPaths(List<Node> items) {
+    private static NetInterface[] parseNetInterface(List<Node> items) {
         if (items != null) {
             if (items.size() == 0) {
-                errMsg = "three is no syslog server config";
+                errMsg = "three is no net interface config";
                 return null;
             }
 
-            soLoadPaths = new String[items.size()];
-            int i=0;
-            for (Node item : items) {
+            NetInterface[] ifaces = new NetInterface[items.size()];
+            for (int i=0; i< items.size(); i++) {
+                NetInterface iface = new NetInterface();
+                ifaces[i] = iface;
+
+                Node item = items.get(i);
                 if (item != null) {
-                    soLoadPaths[i++] = item.getText();
+                    iface.iface = parseField(item.selectSingleNode("interface"), null);
+                    iface.command = parseField(item.selectSingleNode("command"), null);
+                    iface.dst = parseField(item.selectSingleNode("dst"), null);
+                    iface.shellCommands = parseShellCommand(item.selectNodes("shells/shell"));
                 }
             }
-            return soLoadPaths;
+            return ifaces;
         }
 
-        errMsg = "three is no valid load so path config";
+        errMsg = "three is no valid net interface config";
         return null;
     }
 
@@ -234,10 +350,10 @@ public class ParamConfig {
                 return null;
             }
 
-            commands = new ShellCommand[items.size()];
+            ShellCommand[] cmds = new ShellCommand[items.size()];
             for (int i=0; i< items.size(); i++) {
                 ShellCommand curShell = new ShellCommand();
-                commands[i] = curShell;
+                cmds[i] = curShell;
 
                 Node item = items.get(i);
                 if (item != null) {
@@ -252,10 +368,75 @@ public class ParamConfig {
                     }
                 }
             }
-            return commands;
+            return cmds;
         }
 
         errMsg = "three is no valid syslog server config";
         return null;
+    }
+
+    public static boolean buildIdsRunShell() {
+        String osname = System.getProperty("os.name");
+        if (osname == null) {
+            osname = "Windows";
+        }
+        osname = osname.toLowerCase();
+
+        boolean isok = false;
+        for (NetInterface iface : netIfaces) {
+            StringBuilder sb = new StringBuilder(128);
+            String suffixName; // 后缀名
+            if (osname.startsWith("linux")) {
+                sb.append("#!/bin/bash\n")
+                        .append("#chkconfig: 2345 80 90\n")
+                        .append("#description:auto_run\n")
+                        .append("export export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.\n");
+                suffixName = ".sh";
+            } else if (osname.startsWith("windows")){
+                sb.append("@echo off\n");
+                suffixName = ".bat";
+            } else {
+                continue;
+            }
+
+            isok = true;
+            String idspath = null;
+            if (dstDir.endsWith("\\") || dstDir.endsWith("/")) {
+                idspath = dstDir.substring(0, dstDir.length()-1);
+            } else {
+                idspath = dstDir;
+            }
+            iface.command = iface.command.replace("${interface}", iface.iface)
+                                            .replaceAll("\\$\\{idspath\\}", idspath);
+            sb.append(iface.command).append("\n");
+            String shellPath = iface.dst;
+            if (!shellPath.endsWith("\\") && !shellPath.endsWith("/")) {
+                shellPath += System.getProperty("file.separator");
+            }
+            String commandFile = shellPath + iface.iface + suffixName;
+            FileChannel fc = null;
+            try {
+                fc = FileChannel.open(Paths.get(commandFile), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                fc.write(ByteBuffer.wrap(sb.toString().getBytes()));
+                fc.close();
+
+                for (int i=0; i<iface.shellCommands.length; i++) {
+                    System.out.print("");
+                    for (int j=0; j<iface.shellCommands[i].params.length; j++){
+                        iface.shellCommands[i].params[j] = iface.shellCommands[i].params[j].replace("${file}", commandFile);
+                        System.out.print(iface.shellCommands[i].params[j] + " ");
+                    }
+                    System.out.print(" return is ");
+                    System.out.println(RunShell.run(iface.shellCommands[i].params));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (!isok) {
+            errMsg = "there is no interface";
+        }
+        return isok;
     }
 }

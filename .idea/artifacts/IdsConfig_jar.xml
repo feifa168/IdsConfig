@@ -14,6 +14,8 @@
       <element id="file-copy" path="$PROJECT_DIR$/idsConfig.xml" />
       <element id="file-copy" path="$PROJECT_DIR$/encrypt/libpugixml.dll" />
       <element id="file-copy" path="$PROJECT_DIR$/encrypt/libNativeDecrypt.dll" />
+      <element id="file-copy" path="$PROJECT_DIR$/idsConfig.sh" />
+      <element id="file-copy" path="$PROJECT_DIR$/idsConfig.bat" />
     </root>
   </artifact>
 </component>
