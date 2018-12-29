@@ -18,11 +18,11 @@
                 </item>
             </items>
         </param>
-        <param type="so" file="ld.so.conf">
-            <items>
-                <item>/usr/lib64/123</item>
-            </items>
-        </param>
+        <!--<param type="so" file="ld.so.conf">-->
+            <!--<items>-->
+                <!--<item>/usr/lib64/123</item>-->
+            <!--</items>-->
+        <!--</param>-->
         <param type="interface">
             <items>
                 <item>
@@ -104,10 +104,10 @@
                     <src>e:\test\t1</src>
                     <dst>e:\test\t2</dst>
                 </item>
-                <item type="lib64">
-                    <src>e:\test\lib64</src>
-                    <dst>e:\test\lib642</dst>
-                </item>
+                <!--<item type="lib64">-->
+                    <!--<src>e:\test\lib64</src>-->
+                    <!--<dst>e:\test\lib642</dst>-->
+                <!--</item>-->
             </items>
         </param>
         <param type="shell">

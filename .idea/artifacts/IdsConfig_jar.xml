@@ -11,11 +11,12 @@
       <element id="library" level="project" name="Maven: commons-io:commons-io:2.6" />
       <element id="library" level="project" name="Maven: junit:junit:4.13-beta-1" />
       <element id="file-copy" path="$PROJECT_DIR$/run.xml" />
-      <element id="file-copy" path="$PROJECT_DIR$/idsConfig.xml" />
       <element id="file-copy" path="$PROJECT_DIR$/encrypt/libpugixml.dll" />
       <element id="file-copy" path="$PROJECT_DIR$/encrypt/libNativeDecrypt.dll" />
-      <element id="file-copy" path="$PROJECT_DIR$/idsConfig.sh" />
-      <element id="file-copy" path="$PROJECT_DIR$/idsConfig.bat" />
+      <element id="file-copy" path="$PROJECT_DIR$/install.bat" />
+      <element id="file-copy" path="$PROJECT_DIR$/install.sh" />
+      <element id="file-copy" path="$PROJECT_DIR$/encrypt/libNativeDecrypt.so" />
+      <element id="file-copy" path="$PROJECT_DIR$/encrypt/libpugixml.so" />
     </root>
   </artifact>
 </component>

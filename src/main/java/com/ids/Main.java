@@ -1,6 +1,7 @@
 package com.ids;
 
 import com.ids.config.SoPathConfig;
+import com.ids.config.SyslogConfig;
 import com.ids.copy.commonio.CopyFile;
 import com.ids.param.ParamConfig;
 import com.ids.shell.RunShell;
@@ -34,44 +35,56 @@ public class Main {
         Map<String, String> mpArgs = getArgMap(args);
 
         if (ParamConfig.parse("run.xml")) {
-            com.ids.config.SyslogConfig.setSyslogServers(ParamConfig.logServer);
-            if (com.ids.config.SyslogConfig.modifySyslogConfigFile(ParamConfig.syslogFile)) {
-                System.out.println("parse " + ParamConfig.syslogFile + " ok");
-            } else {
-                System.out.println(com.ids.config.SyslogConfig.errMsg);
+
+            if ( (null != ParamConfig.syslogFile) && (null != ParamConfig.logServer)) {
+                SyslogConfig.setSyslogServers(ParamConfig.logServer);
+                if (SyslogConfig.modifySyslogConfigFile(ParamConfig.syslogFile)) {
+                    System.out.println("parse " + ParamConfig.syslogFile + " ok");
+                } else {
+                    System.out.println(SyslogConfig.errMsg);
+                }
             }
 
             // 参数-interface跟的是网卡
             String firstInterface = mpArgs.get("-interface");
-            if (null != firstInterface) {
+            if ( (null != firstInterface) && (null != ParamConfig.netIfaces)) {
                 ParamConfig.netIfaces[0].iface = firstInterface;
             }
 
+            CopyFile cf = null;
+            String srcDir = null;
+            String destDir = null;
             // copy file
-            CopyFile cf = new CopyFile();
-            String srcDir = ParamConfig.srcDir;
-            String destDir = ParamConfig.dstDir;
-            if(cf.copyDirectory(srcDir, destDir)) {
-                System.out.println("copydirectory from "+srcDir+" to "+destDir+" ok");
-            } else {
-                System.out.println("copydirectory from "+srcDir+" to "+destDir+" fail, error is " + cf.getErrMsg());
+            if ( (null != ParamConfig.srcDir) && (null != ParamConfig.dstDir) ) {
+                cf = new CopyFile();
+                srcDir = ParamConfig.srcDir;
+                destDir = ParamConfig.dstDir;
+                if(cf.copyDirectory(srcDir, destDir)) {
+                    System.out.println("copydirectory from "+srcDir+" to "+destDir+" ok");
+                } else {
+                    System.out.println("copydirectory from "+srcDir+" to "+destDir+" fail, error is " + cf.getErrMsg());
+                }
             }
 
-            srcDir = ParamConfig.lib64SrcDir;
-            destDir = ParamConfig.lib64DstDir;
-            if(cf.copyDirectory(srcDir, destDir)) {
-                System.out.println("copydirectory from "+srcDir+" to "+destDir+" ok");
-            } else {
-                System.out.println("copydirectory from "+srcDir+" to "+destDir+" fail, error is " + cf.getErrMsg());
+            if ( (null != ParamConfig.lib64SrcDir) && (null != ParamConfig.lib64DstDir) ) {
+                srcDir = ParamConfig.lib64SrcDir;
+                destDir = ParamConfig.lib64DstDir;
+                if(cf.copyDirectory(srcDir, destDir)) {
+                    System.out.println("copydirectory from "+srcDir+" to "+destDir+" ok");
+                } else {
+                    System.out.println("copydirectory from "+srcDir+" to "+destDir+" fail, error is " + cf.getErrMsg());
+                }
             }
 
             // 修改ld.so.conf
-            SoPathConfig.setLdSoFile(ParamConfig.ldSoFile);
-            SoPathConfig.setSoLoadPaths(ParamConfig.soLoadPaths);
-            if (SoPathConfig.modifyLdSoConfigFile()) {
-                System.out.println("modify "+ParamConfig.ldSoFile + " ok");
-            } else {
-                System.out.println("modify "+ParamConfig.ldSoFile + " fail, error is "+SoPathConfig.errMsg);
+            if ( (null != ParamConfig.ldSoFile) && (null != ParamConfig.soLoadPaths) ) {
+                SoPathConfig.setLdSoFile(ParamConfig.ldSoFile);
+                SoPathConfig.setSoLoadPaths(ParamConfig.soLoadPaths);
+                if (SoPathConfig.modifyLdSoConfigFile()) {
+                    System.out.println("modify "+ParamConfig.ldSoFile + " ok");
+                } else {
+                    System.out.println("modify "+ParamConfig.ldSoFile + " fail, error is "+SoPathConfig.errMsg);
+                }
             }
 
             // 执行shell命令

@@ -2,7 +2,8 @@
 
 <encrypt>
     <src>IdsConfig.jar</src>
-    <dst>IdsConfigEnc.jar</dst>
+    <dst>install.jar</dst>
+    <decxml>dec_install.xml</decxml>
     <files>
         <file type="package">com.ids</file>
     </files>

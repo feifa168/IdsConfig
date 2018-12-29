@@ -143,17 +143,17 @@ public class ParamConfig {
 
     public static String errMsg     = null;
 
-    public static SyslogServer[] logServer;
-    public static String syslogFile    = "/etc/rsyslog.conf";
-    public static String ldSoFile      = "/etc/ld.so.conf";
-    public static String[] soLoadPaths;
-    public static String srcDir        = "ids";
-    public static String dstDir        = "/usr/local/ids";
-    public static String lib64SrcDir   = "lib64";
-    public static String lib64DstDir   = "/usr/local/lib64";
-    public static NetInterface[] netIfaces;
+    public static SyslogServer[] logServer = null;
+    public static String syslogFile    = null;//= "/etc/rsyslog.conf";
+    public static String ldSoFile      = null;//= "/etc/ld.so.conf";
+    public static String[] soLoadPaths = null;
+    public static String srcDir        = null;//= "ids";
+    public static String dstDir        = null;//= "/usr/local/ids";
+    public static String lib64SrcDir   = null;//= "lib64";
+    public static String lib64DstDir   = null;//= "/usr/local/lib64";
+    public static NetInterface[] netIfaces = null;
     public static String encode        = "utf-8";
-    public static ShellCommand[] commands;
+    public static ShellCommand[] commands  = null;
 
     public static boolean parse(String runXml) {
         SAXReader reader = new SAXReader();
@@ -383,54 +383,67 @@ public class ParamConfig {
         osname = osname.toLowerCase();
 
         boolean isok = false;
-        for (NetInterface iface : netIfaces) {
-            StringBuilder sb = new StringBuilder(128);
-            String suffixName; // 后缀名
-            if (osname.startsWith("linux")) {
-                sb.append("#!/bin/bash\n")
+        if (null != netIfaces) {
+            for (NetInterface iface : netIfaces) {
+                StringBuilder sb = new StringBuilder(128);
+                String suffixName; // 后缀名
+                if (osname.startsWith("linux")) {
+                    sb.append("#!/bin/bash\n")
                         .append("#chkconfig: 2345 80 90\n")
                         .append("#description:auto_run\n")
-                        .append("export export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.\n");
-                suffixName = ".sh";
-            } else if (osname.startsWith("windows")){
-                sb.append("@echo off\n");
-                suffixName = ".bat";
-            } else {
-                continue;
-            }
-
-            isok = true;
-            String idspath = null;
-            if (dstDir.endsWith("\\") || dstDir.endsWith("/")) {
-                idspath = dstDir.substring(0, dstDir.length()-1);
-            } else {
-                idspath = dstDir;
-            }
-            iface.command = iface.command.replace("${interface}", iface.iface)
-                                            .replaceAll("\\$\\{idspath\\}", idspath);
-            sb.append(iface.command).append("\n");
-            String shellPath = iface.dst;
-            if (!shellPath.endsWith("\\") && !shellPath.endsWith("/")) {
-                shellPath += System.getProperty("file.separator");
-            }
-            String commandFile = shellPath + iface.iface + suffixName;
-            FileChannel fc = null;
-            try {
-                fc = FileChannel.open(Paths.get(commandFile), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-                fc.write(ByteBuffer.wrap(sb.toString().getBytes()));
-                fc.close();
-
-                for (int i=0; i<iface.shellCommands.length; i++) {
-                    System.out.print("");
-                    for (int j=0; j<iface.shellCommands[i].params.length; j++){
-                        iface.shellCommands[i].params[j] = iface.shellCommands[i].params[j].replace("${file}", commandFile);
-                        System.out.print(iface.shellCommands[i].params[j] + " ");
+                        .append("export export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:")
+                        .append(ParamConfig.dstDir);
+                    char endChar = sb.charAt(sb.length()-1);
+                    if (endChar != '\\' || endChar != '/') {
+                        sb.append(System.getProperty("file.separator"));
                     }
-                    System.out.print(" return is ");
-                    System.out.println(RunShell.run(iface.shellCommands[i].params));
+                    sb.append("lib64")
+                        .append(System.getProperty("file.separator"))
+                        .append("\n");
+
+                    suffixName = ".sh";
+                } else if (osname.startsWith("windows")){
+                    sb.append("@echo off\n");
+                    suffixName = ".bat";
+                } else {
+                    continue;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+                isok = true;
+                String idspath = null;
+                if (dstDir.endsWith("\\") || dstDir.endsWith("/")) {
+                    idspath = dstDir.substring(0, dstDir.length()-1);
+                } else {
+                    idspath = dstDir;
+                }
+                iface.command = iface.command.replace("${interface}", iface.iface)
+                        .replaceAll("\\$\\{idspath\\}", idspath);
+                sb.append(iface.command).append("\n");
+                String shellPath = iface.dst;
+                if (!shellPath.endsWith("\\") && !shellPath.endsWith("/")) {
+                    shellPath += System.getProperty("file.separator");
+                }
+                String commandFile = shellPath + iface.iface + suffixName;
+                FileChannel fc = null;
+                try {
+                    fc = FileChannel.open(Paths.get(commandFile), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                    fc.write(ByteBuffer.wrap(sb.toString().getBytes()));
+                    fc.close();
+
+                    if (null != iface.shellCommands) {
+                        for (int i=0; i<iface.shellCommands.length; i++) {
+                            System.out.print("");
+                            for (int j=0; j<iface.shellCommands[i].params.length; j++){
+                                iface.shellCommands[i].params[j] = iface.shellCommands[i].params[j].replace("${file}", commandFile);
+                                System.out.print(iface.shellCommands[i].params[j] + " ");
+                            }
+                            System.out.print(" return is ");
+                            System.out.println(RunShell.run(iface.shellCommands[i].params));
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 

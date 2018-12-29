@@ -3,7 +3,7 @@
 IF {%1}=={} goto nointerface
 set iface=%1
 echo %iface%
-java -agentlib:libNativeDecrypt=idsConfig.xml -jar IdsConfigEnc.jar -interface %iface%
+java -agentlib:libNativeDecrypt=dec_install.xml -jar install.jar -interface %iface%
 goto end
 
 :nointerface

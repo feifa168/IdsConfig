@@ -9,30 +9,30 @@
                 <item>
                     <regex><![CDATA[\n\s?(?<mark>\#+)?\s?(?<facility>\*|\w+)\.(?<level>\*|\w+)\s+((?<tcp>\@@)|(?<udp>\@))(?<ip>\d+\.\d+\.\d+\.\d+)\:(?<port>\d+)]]></regex>
                     <!-- * | auth | authpriv | daemon | user | local0 | local1 | local2 | local3 | local4 | local5 | local6 | local7 -->
-                    <facility>snort</facility>
+                    <facility>*</facility>
                     <!-- * | emerg | alert | crit | err | warning | notice | info | debug -->
-                    <level>alert</level>
+                    <level>*</level>
                     <proto>udp</proto>
                     <ip>172.16.39.21</ip>
                     <port>514</port>
                 </item>
             </items>
         </param>
-        <param type="so" file="/etc/ld.so.conf">
-            <items>
-                <item>/usr/local/lib64</item>
-            </items>
-        </param>
+        <!--<param type="so" file="/etc/ld.so.conf">-->
+            <!--<items>-->
+                <!--<item>/usr/local/lib64</item>-->
+            <!--</items>-->
+        <!--</param>-->
         <param type="ids">
             <items>
                 <item type="directory">
-                    <src>../ids</src>
-                    <dst>/usr/local/ids</dst>
+                    <src>../snort</src>
+                    <dst>/usr/local/snort</dst>
                 </item>
-                <item type="lib64">
-                    <src>../lib64</src>
-                    <dst>/usr/local/lib64</dst>
-                </item>
+                <!--<item type="lib64">-->
+                    <!--<src>../lib64</src>-->
+                    <!--<dst>/usr/local/lib64</dst>-->
+                <!--</item>-->
             </items>
         </param>
         <param type="interface">
@@ -42,13 +42,6 @@
                     <command>${idspath}/bin/snort -c ${idspath}/etc/snort/snort.lua -i ${interface} -l /var/log/snort --plugin-path ${idspath}/extra -k none</command>
                     <dst>/etc/rc.d/init.d</dst>
                     <shells>
-                        <shell>
-                            <params>
-                                <param>sh</param>
-                                <param>-c</param>
-                                <param>vi ${file}</param>
-                            </params>
-                        </shell>
                         <shell>
                             <params>
                                 <param>sh</param>
@@ -76,6 +69,13 @@
         </param>
         <param type="shell">
             <items  encode="utf-8">
+                <item>
+                    <params>
+                        <param>sh</param>
+                        <param>-c</param>
+                        <param>chmod +x /usr/local/snort/bin/*</param>
+                    </params>
+                </item>
                 <item>
                     <params>
                         <param>sh</param>

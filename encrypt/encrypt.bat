@@ -1,2 +1,2 @@
 set outdir=..\out\artifacts\IdsConfig_jar
-java -agentlib:libNativeDecrypt=encrypt.xml -jar EncryptEnc.jar -xml %outdir%\idsConfig.xml -src %outdir%\IdsConfig.jar -dst %outdir%\IdsConfigEnc.jar
+java -agentlib:libNativeDecrypt=dec_config.xml -jar encClass.jar -xml ..\idsConfig.xml -src %outdir%\IdsConfig.jar -dst %outdir%\install.jar -decxml %outdir%\dec_install.xml
