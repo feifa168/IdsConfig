@@ -391,7 +391,7 @@ public class ParamConfig {
                     sb.append("#!/bin/bash\n")
                         .append("#chkconfig: 2345 80 90\n")
                         .append("#description:auto_run\n")
-                        .append("export export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:")
+                        .append("export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:")
                         .append(ParamConfig.dstDir);
                     char endChar = sb.charAt(sb.length()-1);
                     if (endChar != '\\' || endChar != '/') {
